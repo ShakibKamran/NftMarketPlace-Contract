@@ -36,7 +36,7 @@ contract NFTMarketplaceTest is Test {
     function testListNFT() public {
         vm.prank(seller);
         marketplace.listNFT(address(nft), 1, 1 ether);
-        (address listedSeller, , , uint256 price, bool isActive) = marketplace.listings(1);
+        (address listedSeller,,, uint256 price, bool isActive) = marketplace.listings(1);
         assertEq(listedSeller, seller);
         assertEq(price, 1 ether);
         assertTrue(isActive);

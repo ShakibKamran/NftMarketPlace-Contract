@@ -35,17 +35,19 @@ contract NFTMarketplace is ReentrancyGuard, Ownable {
 
     event NFTListed(uint256 listingId, address seller, address nftContract, uint256 tokenId, uint256 price);
     event NFTSold(uint256 listingId, address buyer, uint256 price);
-    event AuctionCreated(uint256 auctionId, address seller, address nftContract, uint256 tokenId, uint256 startPrice, uint256 endTime);
+    event AuctionCreated(
+        uint256 auctionId, address seller, address nftContract, uint256 tokenId, uint256 startPrice, uint256 endTime
+    );
     event NewBidPlaced(uint256 auctionId, address bidder, uint256 amount);
     event AuctionEnded(uint256 auctionId, address winner, uint256 amount);
     event NFTDelisted(uint256 listingId);
 
     constructor() Ownable(msg.sender) {
-       NftMarketOwner = msg.sender;
+        NftMarketOwner = msg.sender;
     }
 
     function setApprovalForMarketplace(address nftContract) public {
-       IERC721(nftContract).setApprovalForAll(address(this), true);
+        IERC721(nftContract).setApprovalForAll(address(this), true);
     }
 
     function listNFT(address nftContract, uint256 tokenId, uint256 price) external nonReentrant {
@@ -82,7 +84,10 @@ contract NFTMarketplace is ReentrancyGuard, Ownable {
         emit NFTSold(listingId, msg.sender, listing.price);
     }
 
-    function createAuction(address nftContract, uint256 tokenId, uint256 startPrice, uint256 duration) external nonReentrant {
+    function createAuction(address nftContract, uint256 tokenId, uint256 startPrice, uint256 duration)
+        external
+        nonReentrant
+    {
         require(startPrice > 0, "Start price must be greater than zero");
         require(duration > 0, "Duration must be positive");
         require(IERC721(nftContract).ownerOf(tokenId) == msg.sender, "Not the owner of NFT");
@@ -92,7 +97,8 @@ contract NFTMarketplace is ReentrancyGuard, Ownable {
         uint256 auctionId = _auctionIds;
 
         IERC721(nftContract).safeTransferFrom(msg.sender, address(this), tokenId);
-        auctions[auctionId] = Auction(msg.sender, nftContract, tokenId, startPrice, 0, address(0), block.timestamp + duration, true);
+        auctions[auctionId] =
+            Auction(msg.sender, nftContract, tokenId, startPrice, 0, address(0), block.timestamp + duration, true);
         emit AuctionCreated(auctionId, msg.sender, nftContract, tokenId, startPrice, block.timestamp + duration);
     }
 
